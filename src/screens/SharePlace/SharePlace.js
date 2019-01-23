@@ -27,6 +27,7 @@ class SharePlace extends Component {
 
     onAddPlace = () => {
         const place = { name: this.state.name, key: Date.now().toString(), image: { uri: 'https://media.istockphoto.com/photos/art-summer-vacation-ocean-beach-picture-id510152502?k=6&m=510152502&s=612x612&w=0&h=dBUs641JFQv3yCxWRnFqG23k_atj7CHu7NxoT29Z2Y4=' } }
+        console.log('the place ', place);
         this.props.dispatch(Actions.addPlace(place))
         this.setState({ name: '' })
     }
@@ -34,6 +35,14 @@ class SharePlace extends Component {
 
     onChange = (name) => {
         this.setState({ name })
+    }
+
+    onPickImage = () => {
+
+    }
+
+    onPickLocation = () => {
+
     }
 
     render() {
@@ -45,9 +54,9 @@ class SharePlace extends Component {
                         <HeadingText>Share a place with us!</HeadingText>
                     </MainText>
 
-                    <PickImage />
+                    <PickImage onPress={this.onPickImage} />
 
-                    <PickLocation />
+                    <PickLocation onPress={this.onPickImage} />
 
                     <PlaceInput
                         onChange={this.onChange}

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Button, Image, StyleSheet } from 'react-native';
 import ImagePlaceholder from '../../assets/background.jpg';
 
-const PickLocation = () => {
+const PickLocation = ({onPress}) => {
     return (
         <React.Fragment>
             <View style={styles.placeholder}>
@@ -10,7 +10,7 @@ const PickLocation = () => {
             </View>
 
             <View style={styles.button}>
-                <Button title="Locate me" />
+                <Button title="Locate me"  onPress={onPress } />
             </View>
         </React.Fragment> 
     );
