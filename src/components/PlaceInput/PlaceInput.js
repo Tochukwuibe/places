@@ -4,6 +4,7 @@ import AppInput from '../../widgets/AppInput/AppInput';
 
 const PlaceInput = ({ onAdd, onChange, value }) => {
   console.log('the value in place input', value)
+  
   return (
 
     <React.Fragment>

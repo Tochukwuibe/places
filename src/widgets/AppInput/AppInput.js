@@ -2,12 +2,24 @@ import React from 'react';
 import { TextInput, StyleSheet } from 'react-native';
 
 
-const AppInput = (props) => {
+const AppInput = ({onChangeText, name, ...rest}) => {
+
+    const changeText = (value) => {
+        if (!!name) {
+            onChangeText({name, value});
+        } else {
+            onChangeText(value);
+        }
+
+       
+    }
+
     return (
         <TextInput 
+            onChangeText={changeText}
             underlineColorAndroid="transparent"
-            {...props}
-            style={[styles.input, props.style || {}]}
+            {...rest}
+            style={[styles.input, rest.style || {}]}
         />
     );
 }
