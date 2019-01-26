@@ -3,6 +3,7 @@ import { TextInput, StyleSheet } from 'react-native';
 
 
 const AppInput = ({onChangeText, name, ...rest}) => {
+    console.log('the rest of the props ', rest)
 
     const changeText = (value) => {
         if (!!name) {

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, Dimensions, StyleSheet, ImageBackground } from 'react-native';
 import { createStackNavigator } from "react-navigation";
+import { Formik, Field } from 'formik';
+
 import AppInput from '../../widgets/AppInput/AppInput';
 import HeadingText from '../../widgets/HeadingText/HeadingText';
 import MainText from '../../widgets/MainText/MainText';
@@ -21,7 +23,10 @@ class Auth extends Component {
         }
     }
 
+    form = { email: '', password: '', confirm: '' }
+ 
     componentDidMount() {
+
         Dimensions.addEventListener('change', this.dimensionsListener)
     }
 
@@ -96,21 +101,32 @@ class Auth extends Component {
                         Switch to login
                     </AppButton>
 
-                    <View style={styles.inputContainer}>
-                        <AppInput style={styles.input} name="email" onChangeText={this.onChangeText} value={this.state.controls.email.value} placeholder="Your Email..." />
+                    <Formik
+                        initialValues={this.form}
+                    >
 
-                        <View style={styles.passwordContainer}>
-                            <View style={styles.passwordWrapper}>
-                                <AppInput style={styles.input} name="password" onChangeText={this.onChangeText} value={this.state.controls.password.value} placeholder="Password..." />
+                        {({  values, handelBlur, errors }) => (
+                            <View style={styles.inputContainer}>
+                                <Field name="email" render={(props) =>
+                                    <AppInput {...props} style={styles.input}  value={''} placeholder="Your Email..." />
+                                } ></Field>
+
+
+                                {/* <View style={styles.passwordContainer}>
+                                    <View style={styles.passwordWrapper}>
+                                        <AppInput style={styles.input} onChangeText={handleChange('password')} value={values.password} placeholder="Password..." />
+                                    </View>
+
+                                    <View style={styles.passwordWrapper}>
+                                        <AppInput style={styles.input} onChangeText={handleChange('confirm')} value={values.confirm} placeholder="Confirm Password..." />
+                                    </View>
+
+                                </View> */}
+
                             </View>
+                        )}
+                    </Formik>
 
-                            <View style={styles.passwordWrapper}>
-                                <AppInput style={styles.input} name="confirm" onChangeText={this.onChangeText} value={this.state.controls.confirm.value} placeholder="Confirm Password..." />
-                            </View>
-
-                        </View>
-
-                    </View>
 
                     <AppButton onPress={this.onLogin}>
                         Submit
