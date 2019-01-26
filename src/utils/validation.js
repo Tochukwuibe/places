@@ -21,19 +21,17 @@ const validate = (value, rules, match) => {
     return valid
 }
 
-const emailValidator = val => {
-    console.log('the email valid ', val.indexOf('@') > 0)
-    return val.indexOf('@') > 0;
+export const emailValidator = (value) => {
+    return value.indexOf('@') < 0;
 }
 
 
-const minLenghtValidator = (val, minLength) => {
-    return val.length >= minLength
-}
+export const minLenghtValidator = (minLength) => (value) => value.length < minLength;
 
-const matchValidator = (value, match) => {
-    console.log('the match ', {value, match}, value === match)
-    return value === match;
+
+export const matchValidator = (match) => (value) => {
+    // console.log('the match ', {value, match}, value === match)
+    return value !== match;
 }
 
 

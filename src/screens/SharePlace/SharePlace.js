@@ -61,8 +61,6 @@ class SharePlace extends Component {
                     <PickLocation onPress={this.onPickImage} />
 
                     <PlaceInput
-                        onChange={this.onChange}
-                        value={this.state.name}
                         onAdd={this.onAddPlace}
                     />
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { TextInput, StyleSheet } from 'react-native';
 
 
-const AppInput = ({onChangeText, name, ...rest}) => {
-    console.log('the rest of the props ', rest)
+const AppInput = ({onChangeText, name, value, error, ...rest}) => {
+    // console.log('the value of the input ', value)
 
     const changeText = (value) => {
         if (!!name) {
@@ -19,8 +19,9 @@ const AppInput = ({onChangeText, name, ...rest}) => {
         <TextInput 
             onChangeText={changeText}
             underlineColorAndroid="transparent"
+            value={value}
             {...rest}
-            style={[styles.input, rest.style || {}]}
+            style={[styles.input, rest.style || {}, !!error ? styles.invalid : null]}
         />
     );
 }
@@ -34,5 +35,9 @@ const styles = StyleSheet.create({
         borderColor: '#eee',
         padding: 5,
         margin: 8,
+    },
+    invalid: {
+        borderColor: 'red',
+        backgroundColor: '#f9c0c0'
     }
 })

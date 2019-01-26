@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Dimensions, StyleSheet, ImageBackground } from 'react-native';
+import { View, Dimensions, StyleSheet, ImageBackground, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { createStackNavigator } from "react-navigation";
 import { Formik, Field } from 'formik';
 
@@ -8,25 +8,17 @@ import HeadingText from '../../widgets/HeadingText/HeadingText';
 import MainText from '../../widgets/MainText/MainText';
 import background from '../../assets/background.jpg';
 import AppButton from '../../widgets/AppButton/AppButton';
-import validate from '../../utils/validation';
+import { emailValidator, minLenghtValidator, matchValidator } from '../../utils/validation';
+import { connect } from 'react-redux';
+import { Actions } from '../../store/actions/auth.actions'
 
 
 class Auth extends Component {
 
+    state = { heigth: Dimensions.get('window').height, mode: 'login' }
+    dispatch = this.props.dispatch;
 
-    state = {
-        heigth: Dimensions.get('window').height,
-        controls: {
-            email: this.createControl('', { email: true }),
-            password: this.createControl('', { minLenght: 6 }),
-            confirm: this.createControl('', { match: 'password' })
-        }
-    }
-
-    form = { email: '', password: '', confirm: '' }
- 
     componentDidMount() {
-
         Dimensions.addEventListener('change', this.dimensionsListener)
     }
 
@@ -34,116 +26,207 @@ class Auth extends Component {
         this.setState({ heigth: data.window.height });
     }
 
+    onToggleMode = () => this.setState(({ mode }) => ({ mode: mode === 'login' ? 'signUp' : 'login' }));
+
+    onLogin = ({ email, password }) => {
+        const data = { email, password }
+        this.dispatch(Actions.login(data, () => this.props.navigation.navigate('Tabs')))
+    }
+
+    render = () => {
+        const state = {
+            ...this.state,
+            onLogin: this.onLogin,
+            onToggleMode: this.onToggleMode
+        }
+        return <Render {...state} />
+
+    }
+
 
     componentWillUnmount() {
         Dimensions.removeEventListener('change', this.dimensionsListener);
     }
 
-    onLogin = () => {
-        this.props.navigation.navigate('Tabs')
+}
+
+
+
+
+
+
+
+const Render = ({ heigth, onLogin, onToggleMode, mode }) => {
+    const styles = stylesFn(heigth, mode);
+
+    let Heading = null;
+
+    if (heigth > 500) {
+        Heading = (
+            <MainText>
+                <HeadingText>{mode === 'signUp' ? 'Please Login' : 'Please Signup'} </HeadingText>
+            </MainText>
+        );
     }
 
-    onChangeText = ({ name, value }) => {
-        let match = {};
-
-        if (this.state.controls[name].validation.match) {
-            const matchControlName = this.state.controls[name].validation.match
-            const matchValue = this.state.controls[matchControlName].value;
-            match = { ...match, [matchControlName]: matchValue }
-            console.log('the match ', match)
-        }
-
-        this.setState(({ controls }) => ({
-            controls: {
-                ...controls,
-                [name]: {
-                    ...controls[name],
-                    value,
-                    valid: validate(value, controls[name].validation, match)
-                }
-            }
-        }));
-
-    }
-
-    createControl(value, validation) {
-        return {
-            value,
-            valid: false,
-            validation
-        }
-    }
+    return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
 
 
-    render() {
+                <ImageBackground source={background} style={styles.backgroundImg}>
 
-        const styles = stylesFn(this.state.heigth);
+                    <KeyboardAvoidingView style={styles.container} behavior="padding">
 
-        let Heading = null;
+                        {Heading}
 
-        if (Dimensions.get('window').height > 500) {
-            Heading = (
-                <MainText>
-                    <HeadingText>Please Login </HeadingText>
-                </MainText>
-            )
-        }
+                        <AppButton onPress={onToggleMode}>
+                            {mode === 'signUp' ? 'Switch to login' : 'Switch to SignUp'}
+                        </AppButton>
 
-        return (
+                        <Form styles={styles} mode={mode} onLogin={onLogin} />
 
-            <ImageBackground source={background} style={styles.backgroundImg}>
 
-                <View style={styles.container}>
 
-                    {Heading}
+                    </KeyboardAvoidingView>
+                </ImageBackground>
+            </View>
 
-                    <AppButton onPress={this.onLogin}>
-                        Switch to login
-                    </AppButton>
+        </TouchableWithoutFeedback>
+    );
+}
 
-                    <Formik
-                        initialValues={this.form}
+
+
+
+
+
+
+
+
+const Form = ({ styles, onLogin, mode }) => (
+
+
+    <Formik
+        initialValues={{ email: '', password: '', confirm: '' }}
+        onSubmit={onLogin}
+    >
+        {({ values, errors, touched, setFieldTouched, isValid }) => (
+
+            <React.Fragment>
+
+                {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
+                <View style={styles.inputContainer}>
+
+                    <Field
+                        name="email"
+                        validate={emailValidator}
+
                     >
+                        {
+                            ({ field: { onChange, value: { email } } }) => (
+                                <React.Fragment>
+                                    <AppInput
+                                        style={styles.input}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        error={errors.email && touched.email}
+                                        onBlur={() => setFieldTouched('email')}
+                                        onChangeText={onChange('email')} value={email} placeholder="Your Email..." />
 
-                        {({  values, handelBlur, errors }) => (
-                            <View style={styles.inputContainer}>
-                                <Field name="email" render={(props) =>
-                                    <AppInput {...props} style={styles.input}  value={''} placeholder="Your Email..." />
-                                } ></Field>
+                                    {
+                                        errors.email && touched.email && <View>
+                                            <Text>Email is required</Text>
+                                        </View>
+                                    }
+
+                                </React.Fragment>
+
+                            )
+                        }
+                    </Field>
 
 
-                                {/* <View style={styles.passwordContainer}>
+
+                    <View style={styles.passwordContainer}>
+
+                        <Field
+                            name="password"
+                            validate={minLenghtValidator(6)}
+                        >
+                            {
+                                ({ field: { onChange, value: { password } } }) => (
                                     <View style={styles.passwordWrapper}>
-                                        <AppInput style={styles.input} onChangeText={handleChange('password')} value={values.password} placeholder="Password..." />
+                                        <AppInput
+                                            style={styles.input}
+                                            onBlur={() => setFieldTouched('password')}
+                                            error={errors.password && touched.password}
+                                            onChangeText={onChange('password')}
+                                            value={password} placeholder="Password..."
+                                            secureTextEntry={true}
+                                        />
+
                                     </View>
-
-                                    <View style={styles.passwordWrapper}>
-                                        <AppInput style={styles.input} onChangeText={handleChange('confirm')} value={values.confirm} placeholder="Confirm Password..." />
-                                    </View>
-
-                                </View> */}
-
-                            </View>
-                        )}
-                    </Formik>
+                                )
+                            }
+                        </Field>
 
 
-                    <AppButton onPress={this.onLogin}>
-                        Submit
-                    </AppButton>
+                        {
+                            mode === 'signUp' && <Field
+                                name="confirm"
+                                validate={matchValidator(values.password)}
+                            >
+
+                                {
+                                    ({ field: { onChange, value: { confirm } } }) => (
+                                        <View style={styles.passwordWrapper}>
+                                            <AppInput
+                                                style={styles.input}
+                                                onBlur={() => setFieldTouched('confirm')}
+                                                error={errors.confirm && touched.confirm}
+                                                onChangeText={onChange('confirm')}
+                                                value={confirm}
+                                                placeholder="Confirm Password..."
+                                                secureTextEntry={true}
+                                            />
+
+                                        </View>
+                                    )
+                                }
+
+                            </Field>
+
+                        }
+
+                    </View>
+
+
 
 
                 </View>
-            </ImageBackground>
 
-        );
-    }
-}
+                {/* </TouchableWithoutFeedback> */}
+                <AppButton disabled={!isValid} onPress={onLogin}>
+                    Submit
+                </AppButton>
 
-export default createStackNavigator({ Auth: { screen: Auth }, }, { headerMode: 'none' });
+            </React.Fragment>
+
+        )}
+    </Formik>
 
 
-const stylesFn = (height) => StyleSheet.create({
+)
+
+
+
+
+
+
+
+const stylesFn = (height, mode) => StyleSheet.create({
     container: {
         flex: 1,
         borderWidth: 1,
@@ -153,7 +236,6 @@ const stylesFn = (height) => StyleSheet.create({
     inputContainer: {
         width: '80%'
     },
-
     input: {
         backgroundColor: '#eee',
         borderColor: '#bbb'
@@ -163,10 +245,20 @@ const stylesFn = (height) => StyleSheet.create({
         height: '100%'
     },
     passwordContainer: {
-        flexDirection: height > 500 ? 'column' : 'row',
+        flexDirection: height > 500 || mode === 'login' ? 'column' : 'row',
         justifyContent: 'space-between'
     },
     passwordWrapper: {
-        width: height > 500 ? '100%' : '45%'
-    }
+        width: height > 500 || mode === 'login' ? '100%' : '45%'
+    },
+
 })
+
+
+const stateToProps = ({ auth }) => ({ ...auth })
+
+const screen = connect(stateToProps, null)(Auth)
+
+export default createStackNavigator({ Auth: { screen }, }, { headerMode: 'none' });
+
+

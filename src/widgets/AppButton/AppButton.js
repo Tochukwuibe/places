@@ -1,27 +1,27 @@
 import React from 'react';
 import { View, TouchableOpacity, TouchableNativeFeedback, Text, StyleSheet, Platform } from 'react-native';
 
-const AppButton = ({ children, onPress, color }) => {
-
+const AppButton = ({ children, onPress, color, disabled }) => {
+    console.log('the disabled ', disabled)
     const content = (
-        <View style={[styles.button, { backgroundColor: color || "#29aaf4" }]}>
-            <Text>{children}</Text>
+        <View style={[styles.button, { backgroundColor: color || "#29aaf4" }, !!disabled ? styles.disabled : null]}>
+            <Text style={!!disabled ? styles.disabledText : null}>{children}</Text>
         </View>
     )
 
     if (Platform.OS === 'android') {
         return (
-            <TouchableNativeFeedback onPress={onPress}>
+            <TouchableNativeFeedback disabled={!!disabled} onPress={onPress}>
                 {content}
             </TouchableNativeFeedback>
         )
     }
 
     return (
-           <TouchableOpacity onPress={onPress}>
-               {content}
-           </TouchableOpacity>
-        );
+        <TouchableOpacity disabled={!!disabled} onPress={onPress}>
+            {content}
+        </TouchableOpacity>
+    );
 }
 
 
@@ -32,6 +32,13 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         borderColor: 'black'
+    },
+    disabled: {
+        backgroundColor: '#eee',
+        borderColor: '#aaa'
+    },
+    disabledText: {
+        color: '#aaa',
     }
 })
 
