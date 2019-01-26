@@ -1,28 +1,27 @@
 import React from 'react';
-import { View, Button, Image, StyleSheet } from 'react-native';
-import ImagePlaceholder from '../../assets/background.jpg';
+import { View, Button, StyleSheet } from 'react-native';
+import MapView from 'react-native-maps';
 
-const PickLocation = ({onPress}) => {
+
+const PickLocation = ({ onPress, location }) => {
     return (
         <React.Fragment>
-            <View style={styles.placeholder}>
-                <Image style={styles.previewImg} source={ImagePlaceholder} />
-            </View>
+            <MapView 
+                initialRegion={location}
+                style={styles.map}
+            />
 
             <View style={styles.button}>
-                <Button title="Locate me"  onPress={onPress } />
+                <Button title="Locate me" onPress={onPress} />
             </View>
-        </React.Fragment> 
+        </React.Fragment>
     );
 }
 
 const styles = StyleSheet.create({
-    placeholder: {
-        borderWidth: 1,
-        borderColor: 'black',
-        backgroundColor: 'grey',
-        width: '80%',
-        height: 150
+    map: {
+        width: '100%',
+        height: 250
     },
     button: {
         margin: 8

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Actions } from '../../store/actions/root.actions'
 import Menu from '../../widgets/Menu/Menu';
 import MainText from '../../widgets/MainText/MainText';
@@ -12,7 +12,14 @@ import PlaceInput from '../../components/PlaceInput/PlaceInput';
 class SharePlace extends Component {
 
 
-    state = { name: '' }
+    state = { 
+        location: {
+            latitude: 37.7900352,
+            longitude: -122.4013726,
+            latitudeDelta: 0.0122,
+            longitudeDelta: Dimensions.get('window').width / Dimensions.get('window').height * 0.0122
+        }
+     }
 
     static navigationOptions = ({ navigation }) => ({
         headerLeft: (
@@ -25,8 +32,7 @@ class SharePlace extends Component {
         this.props.navigation.navigate('Auth')
     }
 
-    onAddPlace = () => {
-        const name = this.state.name;
+    onAddPlace = (name) => {
         if (!(!!name)) {return null;}
         const place = { name, key: Date.now().toString(), image: { uri: 'https://media.istockphoto.com/photos/art-summer-vacation-ocean-beach-picture-id510152502?k=6&m=510152502&s=612x612&w=0&h=dBUs641JFQv3yCxWRnFqG23k_atj7CHu7NxoT29Z2Y4=' } }
         console.log('the place ', place);
@@ -58,7 +64,7 @@ class SharePlace extends Component {
 
                     <PickImage onPress={this.onPickImage} />
 
-                    <PickLocation onPress={this.onPickImage} />
+                    <PickLocation location={this.state.location} onPress={this.onPickLocation} />
 
                     <PlaceInput
                         onAdd={this.onAddPlace}

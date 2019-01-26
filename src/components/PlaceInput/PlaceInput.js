@@ -10,49 +10,53 @@ const PlaceInput = ({ onAdd }) => {
     return !(!!value.trim())
 
   };
+  const form = { place: '' }
 
   return (
 
 
-      <Formik
-        initialValues={{ place: '' }}
-        onSubmit={() => { }}
-      >
-        {
-          ({ values, errors, touched, setFieldTouched, isValid }) => (
-            <React.Fragment>
+    <Formik
+      initialValues={form}
+      onSubmit={(values, {resetForm}) => {
+        onAdd(values.place);
+        resetForm(form);
+      }}
+    >
+      {
+        ({ values, errors, touched, setFieldTouched, isValid, handleSubmit}) => (
+          <React.Fragment>
 
 
-              <Field
-                name="place"
-                validate={validateFn}
-              >
-                {({ field: { onChange, value: { place } } }) => <AppInput
-                  autoCapitalize="none"
-                  value={place}
-                  onChangeText={onChange('place')}
-                  placeholder="Place Name"
-                  error={errors.place && touched.place}
-                  onBlur={() => setFieldTouched('place')}
-                />
-                }
-
-              </Field>
-              {
-                errors.place && touched.place && <View>
-                  <Text>A name is required</Text>
-                </View>
+            <Field
+              name="place"
+              validate={validateFn}
+            >
+              {({ field: { onChange } }) => <AppInput
+                autoCapitalize="none"
+                value={values.place}
+                onChangeText={onChange('place')}
+                placeholder="Place Name"
+                error={errors.place && touched.place}
+                onBlur={() => setFieldTouched('place')}
+              />
               }
 
-              <View style={styles.button}>
-                <Button disabled={!isValid} onPress={onAdd} title="Share" />
+            </Field>
+            {
+              errors.place && touched.place && <View>
+                <Text>A name is required</Text>
               </View>
-            </React.Fragment>
-          )
-        }
+            }
+
+            <View style={styles.button}>
+              <Button disabled={!isValid} onPress={handleSubmit} title="Share" />
+            </View>
+          </React.Fragment>
+        )
+      }
 
 
-      </Formik>
+    </Formik>
 
 
 
