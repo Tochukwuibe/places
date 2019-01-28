@@ -3,7 +3,7 @@ import { View, StyleSheet, Button, Text } from 'react-native'
 import AppInput from '../../widgets/AppInput/AppInput';
 import { Formik, Field } from 'formik';
 
-const PlaceInput = ({ onAdd }) => {
+const PlaceInput = ({ onAdd, disabled }) => {
 
 
   const validateFn = (value) => {
@@ -49,7 +49,7 @@ const PlaceInput = ({ onAdd }) => {
             }
 
             <View style={styles.button}>
-              <Button disabled={!isValid} onPress={handleSubmit} title="Share" />
+              <Button disabled={!isValid ||  disabled} onPress={handleSubmit} title="Share" />
             </View>
           </React.Fragment>
         )

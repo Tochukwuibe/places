@@ -3,6 +3,7 @@ import { View, TouchableOpacity, StyleSheet, Text, Animated } from 'react-native
 import { connect } from 'react-redux';
 import PlaceList from '../../components/PlaceList/PlaceList';
 import Menu from '../../widgets/Menu/Menu';
+import {Actions} from '../../store/actions/root.actions';
 
 
 
@@ -13,6 +14,8 @@ class FindPlace extends Component {
         removeAmin: new Animated.Value(1),
         fadeinAmin: new Animated.Value(0)
     }
+
+    dispatch = this.props.dispatch;
 
     static navigationOptions = ({ navigation }) => ({
         headerLeft: (
@@ -28,11 +31,11 @@ class FindPlace extends Component {
 
     onSelected = (key) => {
         const place = this.props.places.find(place => place.key === key)
-        this.props.navigation.navigate('PlaceDetail', { place })
+        this.dispatch(Actions.selectPlace(place));
+        this.props.navigation.navigate('PlaceDetail');
     }
 
     onLoadPlaces = () => {
-        // this.setState({placesLoaded: true, })
         Animated.timing(this.state.removeAmin, {
             toValue: 0,
             duration: 500,

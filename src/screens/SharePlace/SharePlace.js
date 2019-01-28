@@ -37,15 +37,16 @@ class SharePlace extends Component {
 
     onAddPlace = (name) => {
         if (!(!!name)) { return null; }
-        const place = { name, key: Date.now().toString(), image: { uri: 'https://media.istockphoto.com/photos/art-summer-vacation-ocean-beach-picture-id510152502?k=6&m=510152502&s=612x612&w=0&h=dBUs641JFQv3yCxWRnFqG23k_atj7CHu7NxoT29Z2Y4=' } }
+        const place = { 
+            name, 
+            key: Date.now().toString(), 
+            image: { uri: 'https://media.istockphoto.com/photos/art-summer-vacation-ocean-beach-picture-id510152502?k=6&m=510152502&s=612x612&w=0&h=dBUs641JFQv3yCxWRnFqG23k_atj7CHu7NxoT29Z2Y4=' },
+            location: this.state.location
+        }
         this.props.dispatch(Actions.addPlace(place))
         this.setState({ name: '' })
     }
 
-
-    onChange = (name) => {
-        this.setState({ name })
-    }
 
     onPickImage = () => {
 
@@ -74,13 +75,16 @@ class SharePlace extends Component {
     }
 
     onCurrentLocation = () => {
+      
         navigator.geolocation.getCurrentPosition(
             (pos) => {
-
+              
                 const event = {
                     nativeEvent: {
-                        latitude:  pos.coords.latitude,
-                        longitude: pos.coords.longitude
+                        coordinate: {
+                            latitude: pos.coords.latitude,
+                            longitude: pos.coords.longitude
+                        }
                     }
                 }
 
@@ -113,6 +117,7 @@ class SharePlace extends Component {
 
                     <PlaceInput
                         onAdd={this.onAddPlace}
+                        disabled={!this.state.locationPicked}
                     />
 
                 </View>

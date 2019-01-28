@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import BackButton from '../../widgets/BackButton/BackButton';
 import { Actions } from '../../store/actions/root.actions';
 import AppIcon from '../../widgets/AppIcon/AppIcon';
+import MapView from 'react-native-maps';
 
 
 class PlaceDetail extends React.Component {
@@ -12,8 +13,9 @@ class PlaceDetail extends React.Component {
     state = { height: Dimensions.get('window').height }
 
     static navigationOptions = ({ navigation }) => {
+        const place = navigation.getParam('place')
         return {
-            title: navigation.getParam('place').name,
+            title: !!place ? place.name : 'Loading...',
             headerLeft: (
                 <BackButton
                     onPress={() => navigation.pop()}
@@ -26,7 +28,8 @@ class PlaceDetail extends React.Component {
 
 
     componentDidMount() {
-        Dimensions.addEventListener('change', this.onDimensionsChange)
+        Dimensions.addEventListener('change', this.onDimensionsChange);
+        this.props.navigation.setParams({ 'place': this.props.place });
     }
 
     componentWillUnmount() {
@@ -48,43 +51,70 @@ class PlaceDetail extends React.Component {
 
     render() {
         console.log('the porps ', this.props)
-        const place = this.props.navigation.getParam('place');
-        return (
-            <View style={[styles.Container, this.state.height < 500 ? styles.landscapeContainer : styles.portirateContainer]}>
+        const place = this.props.place;
+        const styles = stylesFn(this.state.height);
+        console.log('the heigth ', this.state.height, styles)
 
-                {this.renderImg(place)}
+        if (!place) return null;
+
+        return (
+            <View style={styles.container}>
+
                 <View style={styles.subcontainer}>
-                    {this.renderName(place)}
-                    {this.renderBtn(place)}
+                    {this.renderImg(place, styles)}
                 </View>
 
+                <View style={styles.subcontainer}>
+                    {this.renderMap(place, styles)}
+                </View>
+
+
+                <View style={styles.subcontainer}>
+                    {this.renderName(place, styles)}
+                    {this.renderBtn(place, styles)}
+                </View>
 
             </View>
         );
     }
 
 
-    renderImg(place) {
+
+    renderMap(place, styles) {
+
+        
         return (
-            <View style={styles.subcontainer}>
-                <Image source={place.image} style={styles.image} />
-            </View>
+            <MapView
+                initialRegion={place.location}
+                style={styles.map}
+            >
+               <MapView.Marker coordinate={place.location} />
+
+            </MapView>
+        )
+
+    }
+
+
+    renderImg(place, styles) {
+        return (
+            <Image source={place.image} style={styles.image} />
         )
     }
 
 
-    renderName(place) {
+    renderName(place, styles) {
         return (
-            <View style={styles.subcontainer}>
+            <View>
                 <Text style={styles.name}>{place.name}</Text>
             </View>
         )
     }
 
 
-    renderBtn(place) {
+    renderBtn(place, styles) {
         return (
-            <View style={styles.subcontainer}>
+            <View style={styles}>
                 <TouchableOpacity onPress={() => this.onDelete(place.key)}>
                     <View style={styles.delete}>
 
@@ -100,16 +130,16 @@ const stateToProps = ({ places: { selectedPlace } }) => ({ place: selectedPlace 
 
 export default connect(stateToProps, null)(PlaceDetail);
 
-const styles = StyleSheet.create({
-    Container: {
+const stylesFn = (height) => StyleSheet.create({
+    container: {
         margin: 22,
         padding: 20,
         flex: 1,
-    },
-    portirateContainer: {
-        flexDirection: 'column'
+        flexDirection: height < 500 ? 'row' : 'column'
     },
     landscapeContainer: {
+        margin: 22,
+        padding: 20,
         flexDirection: 'row'
     },
     image: {
@@ -126,6 +156,10 @@ const styles = StyleSheet.create({
     },
     subcontainer: {
         flex: 1
-    }
+    },
+    map: {
+        width: '100%',
+        height: 200
+    },
 })
 
