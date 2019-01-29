@@ -8,6 +8,9 @@ import HeadingText from '../../widgets/HeadingText/HeadingText';
 import PickImage from '../../components/PickImage/PickImage';
 import PickLocation from '../../components/PickLocation/PickLocation';
 import PlaceInput from '../../components/PlaceInput/PlaceInput';
+import ImagePicker from 'react-native-image-picker';
+import CameraRollPicker from 'react-native-camera-roll-picker';
+
 
 class SharePlace extends Component {
 
@@ -19,7 +22,8 @@ class SharePlace extends Component {
             longitudeDelta: Dimensions.get('window').width / Dimensions.get('window').height * 0.0122
         },
         locationPicked: false,
-        image: { uri: '' }
+        image: null,
+        showPicker: false
     }
 
     state = { ...this.initialState };
@@ -42,7 +46,7 @@ class SharePlace extends Component {
         const place = {
             name,
             key: Date.now().toString(),
-            image: { uri: this.state.image.url },
+            image: { uri: this.state.image.uri },
             location: this.state.location
         }
         this.props.dispatch(Actions.addPlace(place))
@@ -51,17 +55,31 @@ class SharePlace extends Component {
 
 
     onPickImage = () => {
-        console.log('picking image')
         if (Platform.OS === 'ios') {
 
-            ImagePickerIOS.openSelectDialog({}, uri => {
-                console.log('the image url ', uri)
-                this.setState({ image: { uri } });
-            }, error => {});
+            ImagePicker.showImagePicker({ 'title': 'Chose on ' }, (res) => {
+                if (res.didCancel) {
+
+                } else if (res.error) {
+
+                } else {
+                    console.log(`the url ${res}`)
+                    this.setState({ image: { uri: res.uri } });
+                }
+            });
 
         } else {
 
+            this.setState({showPicker: true})
         }
+    }
+
+    getSelectedImages = (imgs) => {
+
+        console.log(`the images `, imgs);
+
+        this.setState({showPicker: false, image: {uri: imgs[0].uri}} )
+
     }
 
     onPickLocation = ({ nativeEvent: { coordinate: { latitude, longitude } } }) => {
@@ -110,6 +128,15 @@ class SharePlace extends Component {
 
     render() {
         console.log('the state ', this.state)
+
+        if (this.state.showPicker) {
+            return <CameraRollPicker
+            callback={this.getSelectedImages}
+            selectSingleItem={true}
+            />
+        }
+
+
         return (
             <ScrollView>
                 <View style={styles.container}>
