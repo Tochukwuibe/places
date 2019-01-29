@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions, Platform, ImagePickerIOS } from 'react-native';
 import { Actions } from '../../store/actions/root.actions'
 import Menu from '../../widgets/Menu/Menu';
 import MainText from '../../widgets/MainText/MainText';
@@ -11,16 +11,18 @@ import PlaceInput from '../../components/PlaceInput/PlaceInput';
 
 class SharePlace extends Component {
 
-
-    state = {
+    initialState = {
         location: {
             latitude: 37.7900352,
             longitude: -122.4013726,
             latitudeDelta: 0.0122,
             longitudeDelta: Dimensions.get('window').width / Dimensions.get('window').height * 0.0122
         },
-        locationPicked: false
+        locationPicked: false,
+        image: { uri: '' }
     }
+
+    state = { ...this.initialState };
 
     mapRef = null;
 
@@ -37,19 +39,29 @@ class SharePlace extends Component {
 
     onAddPlace = (name) => {
         if (!(!!name)) { return null; }
-        const place = { 
-            name, 
-            key: Date.now().toString(), 
-            image: { uri: 'https://media.istockphoto.com/photos/art-summer-vacation-ocean-beach-picture-id510152502?k=6&m=510152502&s=612x612&w=0&h=dBUs641JFQv3yCxWRnFqG23k_atj7CHu7NxoT29Z2Y4=' },
+        const place = {
+            name,
+            key: Date.now().toString(),
+            image: { uri: this.state.image.url },
             location: this.state.location
         }
         this.props.dispatch(Actions.addPlace(place))
-        this.setState({ name: '' })
+        this.setState({ ...this.initialState })
     }
 
 
     onPickImage = () => {
+        console.log('picking image')
+        if (Platform.OS === 'ios') {
 
+            ImagePickerIOS.openSelectDialog({}, uri => {
+                console.log('the image url ', uri)
+                this.setState({ image: { uri } });
+            }, error => {});
+
+        } else {
+
+        }
     }
 
     onPickLocation = ({ nativeEvent: { coordinate: { latitude, longitude } } }) => {
@@ -75,10 +87,10 @@ class SharePlace extends Component {
     }
 
     onCurrentLocation = () => {
-      
+
         navigator.geolocation.getCurrentPosition(
             (pos) => {
-              
+
                 const event = {
                     nativeEvent: {
                         coordinate: {
@@ -97,6 +109,7 @@ class SharePlace extends Component {
     }
 
     render() {
+        console.log('the state ', this.state)
         return (
             <ScrollView>
                 <View style={styles.container}>
@@ -105,7 +118,10 @@ class SharePlace extends Component {
                         <HeadingText>Share a place with us!</HeadingText>
                     </MainText>
 
-                    <PickImage onPress={this.onPickImage} />
+                    <PickImage
+                        onPress={this.onPickImage}
+                        image={this.state.image}
+                    />
 
                     <PickLocation
                         location={this.state.location}

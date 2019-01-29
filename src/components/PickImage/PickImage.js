@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Button, Image, StyleSheet } from 'react-native';
-import ImagePlaceholder from '../../assets/background.jpg';
 
 
-const PickImage = ({onPress}) => {
+
+const PickImage = ({onPress, image}) => {
+    console.log('the image ', image);
     return (
         <React.Fragment>
             <View style={styles.placeholder}>
-                <Image style={styles.previewImg} source={ImagePlaceholder} />
+                <Image style={styles.previewImg} source={image} />
             </View>
 
             <View style={styles.button}>
