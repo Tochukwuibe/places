@@ -23,7 +23,8 @@ class SharePlace extends Component {
         },
         locationPicked: false,
         image: null,
-        showPicker: false
+        showPicker: false,
+        loading: false
     }
 
     state = { ...this.initialState };
@@ -43,6 +44,7 @@ class SharePlace extends Component {
 
     onAddPlace = (name) => {
         if (!(!!name)) { return null; }
+        this.setState({loading: true})
         const {latitude, longitude, latitudeDelta, longitudeDelta} = this.state.location;
         const place = {
             name,
@@ -65,7 +67,7 @@ class SharePlace extends Component {
 
                 } else {
                     console.log(`the url ${res}`)
-                    this.setState({ image: { uri: res.uri } });
+                    this.setState({ image: { uri: res.uri , base64: res.data} });
                 }
             });
 

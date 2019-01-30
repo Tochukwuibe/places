@@ -4,13 +4,21 @@ import Auth from "./Auth/Auth";
 
 import Tabs from "./Tabs/Tabs";
 import PlaceDetail from "../screens/PlaceDetail/PlaceDetail";
+import AuthLoading from "./AuthLoading/AuthLoading";
 
 
 
-const mainAppStack = createSwitchNavigator({
-    Auth: Auth,
-    Tabs: Tabs
-})
+const mainAppStack = createSwitchNavigator(
+    {
+        Auth: Auth,
+        Tabs: Tabs,
+        AuthLoading: AuthLoading
+    },
+    {
+        initialRouteName: 'AuthLoading'
+    }
+)
+
 
 const modalStack = createStackNavigator({
     PlaceDetail: PlaceDetail

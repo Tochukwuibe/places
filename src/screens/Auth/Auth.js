@@ -10,7 +10,8 @@ import background from '../../assets/background.jpg';
 import AppButton from '../../widgets/AppButton/AppButton';
 import { emailValidator, minLenghtValidator, matchValidator } from '../../utils/validation';
 import { connect } from 'react-redux';
-import { Actions } from '../../store/actions/auth.actions'
+import { Actions } from '../../store/actions/auth.actions';
+import firebase from 'react-native-firebase';
 
 
 class Auth extends Component {
@@ -29,8 +30,10 @@ class Auth extends Component {
     onToggleMode = () => this.setState(({ mode }) => ({ mode: mode === 'login' ? 'signUp' : 'login' }));
 
     onLogin = ({ email, password }) => {
-        const data = { email, password }
-        this.dispatch(Actions.login(data, () => this.props.navigation.navigate('Tabs')))
+        const data = { email, password };
+        
+        firebase.auth().signInAnonymously().then(() =>  this.dispatch(Actions.login(data, () => this.props.navigation.navigate('Tabs'))))
+       
     }
 
     render = () => {
