@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { View, StyleSheet, ScrollView, Dimensions, Platform, ImagePickerIOS } from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions, Platform } from 'react-native';
 import { Actions } from '../../store/actions/root.actions'
 import Menu from '../../widgets/Menu/Menu';
 import MainText from '../../widgets/MainText/MainText';
