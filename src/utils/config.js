@@ -1,0 +1,1 @@
+export const DATABASE_ENDPOINT = 'https://orgapp-dev.firebaseio.com';

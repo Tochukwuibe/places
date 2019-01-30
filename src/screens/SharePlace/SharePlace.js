@@ -43,14 +43,15 @@ class SharePlace extends Component {
 
     onAddPlace = (name) => {
         if (!(!!name)) { return null; }
+        const {latitude, longitude, latitudeDelta, longitudeDelta} = this.state.location;
         const place = {
             name,
             key: Date.now().toString(),
             image: { uri: this.state.image.uri },
-            location: this.state.location
+            location: {latitude, longitude, latitudeDelta, longitudeDelta}
         }
-        this.props.dispatch(Actions.addPlace(place))
-        this.setState({ ...this.initialState })
+        this.props.dispatch(Actions.addPlace(place, () =>  this.setState({ ...this.initialState })))
+       
     }
 
 
@@ -75,8 +76,6 @@ class SharePlace extends Component {
     }
 
     getSelectedImages = (imgs) => {
-
-        console.log(`the images `, imgs);
 
         this.setState({showPicker: false, image: {uri: imgs[0].uri}} )
 
